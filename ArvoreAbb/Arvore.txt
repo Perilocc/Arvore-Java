@@ -1,0 +1,238 @@
+Impressão Pré Ordenada:
+Aluno: Perilo, RGM: 30
+Aluno: João, RGM: 20
+Aluno: julio, RGM: 19
+Aluno: heitor, RGM: 22
+Aluno: kalil, RGM: 29
+Aluno: 32, RGM: 32
+Aluno: Treizoitão, RGM: 40
+
+
+Impressão In-Ordem:
+Aluno: julio, RGM: 19
+Aluno: João, RGM: 20
+Aluno: heitor, RGM: 22
+Aluno: kalil, RGM: 29
+Aluno: Perilo, RGM: 30
+Aluno: 32, RGM: 32
+Aluno: Treizoitão, RGM: 40
+
+Impressão Pós Ordenada:
+Aluno: julio, RGM: 19
+Aluno: kalil, RGM: 29
+Aluno: heitor, RGM: 22
+Aluno: João, RGM: 20
+Aluno: Treizoitão, RGM: 40
+Aluno: 32, RGM: 32
+Aluno: Perilo, RGM: 30
+
+public class NoArvore {
+    Aluno aluno;
+    NoArvore esquerda;
+    NoArvore direita;
+
+    public NoArvore(Aluno aluno) {
+        this.aluno = aluno;
+        this.esquerda = null;
+        this.direita = null;
+    }
+
+    public static NoArvore insere(NoArvore no, Aluno novoAluno) {
+        if (no == null) {
+            return new NoArvore(novoAluno);
+        } else if (novoAluno.rgm < no.aluno.rgm) {
+            no.esquerda = insere(no.esquerda, novoAluno);
+        } else if (novoAluno.rgm > no.aluno.rgm) {
+            no.direita = insere(no.direita, novoAluno);
+        }
+        return no;
+    }
+
+    public static void imprimeInOrdem(NoArvore raiz) {
+        if (raiz != null) {
+            imprimeInOrdem(raiz.esquerda);
+            System.out.println("Aluno: " + raiz.aluno.nome + ", RGM: " + raiz.aluno.rgm);
+            imprimeInOrdem(raiz.direita);
+        }
+    }
+    
+    public static void imprimePreOrdem(NoArvore raiz) {
+        if (raiz != null) {
+        	System.out.println("Aluno: " + raiz.aluno.nome + ", RGM: " + raiz.aluno.rgm);
+            imprimePreOrdem(raiz.esquerda);
+            imprimePreOrdem(raiz.direita);
+        }
+    }
+    
+    public static void imprimePosOrdem(NoArvore raiz) {
+        if (raiz != null) {
+            imprimePosOrdem(raiz.esquerda);
+            imprimePosOrdem(raiz.direita);
+            System.out.println("Aluno: " + raiz.aluno.nome + ", RGM: " + raiz.aluno.rgm);
+        }
+    }
+
+    public static NoArvore busca(NoArvore no, int rgmProcurado) {
+        if (no == null)
+            return null;
+
+        if (no.aluno.rgm > rgmProcurado)
+            return busca(no.esquerda, rgmProcurado);
+        else if (no.aluno.rgm < rgmProcurado)
+            return busca(no.direita, rgmProcurado);
+        else
+            return no;
+    }
+
+    public static NoArvore remove(NoArvore r, int rgm) {
+        if (r == null)
+            return null;
+        else if (r.aluno.rgm > rgm)
+            r.esquerda = remove(r.esquerda, rgm);
+        else if (r.aluno.rgm < rgm)
+            r.direita = remove(r.direita, rgm);
+        else {
+            if (r.esquerda == null && r.direita == null) {
+                r = null;
+            } else if (r.esquerda == null) {
+                NoArvore temp = r;
+                r = r.direita;
+            } else if (r.direita == null) {
+                NoArvore temp = r;
+                r = r.esquerda;
+            } else {
+                NoArvore subesquerda = r.esquerda;
+                while (subesquerda.direita != null) {
+                    subesquerda = subesquerda.direita;
+                }
+                r.aluno = subesquerda.aluno;
+                subesquerda.aluno = null;
+                r.esquerda = remove(r.esquerda, rgm);
+            }
+        }
+        return r;
+    }
+}
+
+==========================================================
+
+import java.util.Scanner;
+
+public class Principal {
+	static Scanner entrada = new Scanner(System.in);
+	static NoArvore raiz = null;
+    public static void main(String[] args) {
+        
+        
+        boolean sair = false;
+
+        while (!sair) {
+            System.out.println("\n==============MENU==============\n");
+            System.out.println("1-Inserir um aluno na Árvore Binária de Busca.");
+            System.out.println("2-Imprimir Árvore Binária de Busca.");
+            System.out.println("3-Buscar um aluno na Árvore Binária de Busca");
+            System.out.println("4-Remover um aluno na Árvore Binária de Busca");
+            System.out.println("5-Sair");
+            System.out.println("==================================");
+            System.out.println("Digite o número da ação desejada: ");
+            int escolha = entrada.nextInt();
+
+            switch (escolha) {
+                case 1:
+                	entrada.nextLine();
+                    System.out.println("\nDigite o nome do aluno: ");
+                    String nome = entrada.nextLine();
+                    System.out.println("\nDigite o RGM do aluno: ");
+                    int rgm = entrada.nextInt();
+                    
+                    Aluno novoAluno = new Aluno(nome, rgm);
+                    raiz = NoArvore.insere(raiz, novoAluno);
+                    break;
+
+                case 2:
+                	MenuImpressões();
+                	break;
+                	// Implementar lógica para opções de impressão: Pré, In e Pós
+                	// Ou faz if's ou faz uma função com if's
+                	
+                case 3:
+                    System.out.println("\nDigite o RGM a ser buscado na árvore:");
+                    int rgmBuscado = entrada.nextInt();
+                    NoArvore resultadoBusca = NoArvore.busca(raiz, rgmBuscado);
+
+                    if (resultadoBusca == null) {
+                        System.out.println("\nAluno com RGM " + rgmBuscado + " não encontrado.");
+                    } 
+                    
+                    else {
+                        System.out.println("\nAluno com RGM " + resultadoBusca.aluno.rgm + " encontrado. Nome: " + resultadoBusca.aluno.nome);
+                    }
+                    break;
+
+                case 4:
+                    System.out.println("\nDigite o RGM do aluno a ser removido: ");
+                    int rgmRemover = entrada.nextInt();
+                    raiz = NoArvore.remove(raiz, rgmRemover);
+                    break;
+
+                case 5:
+                    System.out.println("\nObrigado por utilizar a aplicação!!!");
+                    System.exit(0);
+
+                default:
+                    System.out.println("\nOpção inválida. Por favor, digite uma opção válida.");
+                    break;
+            }
+        }
+    }
+
+	private static void MenuImpressões() {
+		
+		System.out.println("\nEscolha a forma da Impressão:");
+    	System.out.println("1-Impressão Pré Ordem ");
+    	System.out.println("2-Impressão In-Ordem ");
+    	System.out.println("3-Impressão Pós Ordem ");
+    	System.out.println("4-Voltar para o Menu");
+    	System.out.println("==================================");
+        System.out.println("Digite o número da ação desejada:");
+        int opcao = entrada.nextInt();
+        
+        switch(opcao) {
+        	
+        	case 1:
+        		System.out.println("\nImpressão Pré Ordenada:");
+            	NoArvore.imprimePreOrdem(raiz);
+                break;
+            
+        	case 2:
+        		System.out.println("\nImpressão In-Ordem:");
+            	NoArvore.imprimeInOrdem(raiz);
+                break;
+            
+        	case 3:
+        		System.out.println("\nImpressão Pós Ordenada:");
+            	NoArvore.imprimePosOrdem(raiz);
+                break;
+                
+        	case 4:
+        		System.out.println("Retornando para o Menu da aplicação ...");
+        		break;
+        		
+            default:
+            	System.out.println("\nOpção inválida. Por favor, digite uma opção válida na próxima vez");
+                break;
+        }
+		
+	}
+}
+
+===========================================================================================
+
+public class Aluno {
+    String nome;
+    int rgm;
+
+    public Aluno(String nome, int rgm) {
+        this.nome = nome;
+        this.rgm = rgm;
+    }
